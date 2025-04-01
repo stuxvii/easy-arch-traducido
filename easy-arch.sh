@@ -63,7 +63,7 @@ kernel_selector () {
     info_print "3) Largo-Plazo: Kernel de Linux con soporte a largo plazo (Long-Term Support LTS)"
     info_print "4) Kernel Zen: Un kernel de Linux optimizado para el uso habitual"
     input_print "Por favor, elija un kernel (e.g. 1): " 
-    read -r kernel_choice
+    read -r -e kernel_choice
     case $kernel_choice in
         1 ) kernel="linux"
             return 0;;
@@ -87,7 +87,7 @@ network_selector () {
     info_print "4) dhcpcd: Cliente DHCP basico (Conecciones por Ethernet o Maquinas virtuales)"
     info_print "5) Configurare esto por mi cuenta (Usuarios avanzados)"
     input_print "Por favor seleccione una opcion para su conexión. (e.g. 1): "
-    read -r network_choice
+    read -r -e network_choice
     if ! ((1 <= network_choice <= 5)); then
         error_print "Elije una opcion valida, intenta otra vez."
         return 1
@@ -120,7 +120,7 @@ network_installer () {
 # User enters a password for the LUKS Container (function).
 lukspass_selector () {
     input_print "Por favor inserte una contraseña para encriptar tu disco con LUKS (Tu clave no se mostrara directamente para protejer tu privacidad.): "
-    read -r -s password
+    read -r -e -s password
     if [[ -z "$password" ]]; then
         echo
         error_print "Necesitas crear una contraseña para LUKS. Intenta de nuevo."
@@ -128,7 +128,7 @@ lukspass_selector () {
     fi
     echo
     input_print "Confirmar tu contraseña de nuevo (Tu clave no se mostrara directamente para protejer tu privacidad.): "
-    read -r -s password2
+    read -r -e -s password2
     echo
     if [[ "$password" != "$password2" ]]; then
         error_print "Las contraseñas no coinciden. Intenta otra vez."
@@ -140,12 +140,12 @@ lukspass_selector () {
 # Setting up a password for the user account (function).
 userpass_selector () {
     input_print "Crea un nombre de usuario (Deja este campo vacio para no crear ningun usuario, no recomendado para usuarios no avanzados): "
-    read -r username
+    read -r -e username
     if [[ -z "$username" ]]; then
         return 0
     fi
     input_print "Crea una contraseña para el usuario $username (Tu clave no se mostrara directamente para protejer tu privacidad.): "
-    read -r -s userpass
+    read -r -e -s userpass
     if [[ -z "$userpass" ]]; then
         echo
         error_print "Necesitas insertar una contraseña para $username, please try again."
@@ -153,7 +153,7 @@ userpass_selector () {
     fi
     echo
     input_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
-    read -r -s userpass2
+    read -r -e -s userpass2
     echo
     if [[ "$userpass" != "$userpass2" ]]; then
         echo
@@ -166,7 +166,7 @@ userpass_selector () {
 # Setting up a password for the root account (function).
 rootpass_selector () {
     input_print "Por favor crear una contraseña para el usuario root (Tu clave no se mostrara directamente para protejer tu privacidad.): "
-    read -r -s rootpass
+    read -r -e -s rootpass
     if [[ -z "$rootpass" ]]; then
         echo
         error_print "Necesitas crear una contraseña para el usuario root."
@@ -174,7 +174,7 @@ rootpass_selector () {
     fi
     echo
     input_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
-    read -r -s rootpass2
+    read -r -e -s rootpass2
     echo
     if [[ "$rootpass" != "$rootpass2" ]]; then
         error_print "Las claves no coinciden, intenta de nuevo."
@@ -198,7 +198,7 @@ microcode_detector () {
 # User enters a hostname (function).
 hostname_selector () {
     input_print "Por favor, crea un nombre para tu maquina: "
-    read -r hostname
+    read -r -e hostname
     if [[ -z "$hostname" ]]; then
         error_print "Necesitas crear un nombre para tu maquina."
         return 1
@@ -209,7 +209,7 @@ hostname_selector () {
 # User chooses the locale (function).
 locale_selector () {
     input_print "Por favor elije un lenguaje (formato: xx_XX. Deja esto vacio para seleccionar en_US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): " locale
-    read -r locale
+    read -r -e locale
     case "$locale" in
         '') locale="en_US.UTF-8"
             info_print "$locale será el lenguaje predeterminado."
@@ -228,7 +228,7 @@ locale_selector () {
 # User chooses the console keyboard layout (function).
 keyboard_selector () {
     input_print "Por favor elije un lenguaje para tu teclado (Deja esto vacio para seleccionar US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): "
-    read -r kblayout
+    read -r -e kblayout
     case "$kblayout" in
         '') kblayout="us"
             info_print "Configurando teclado en idioma Ingles."
@@ -293,7 +293,7 @@ until rootpass_selector; do : ; done
 
 # Warn user about deletion of old partition scheme.
 input_print "Esto eliminara la tabla de particiones en $DISK cuando la instalación comience. Estas seguro de quieres hacer eso? (Y=SI, N=NO) (Ultima advertencia, elegir "y" borrara todos los datos en el disco, sin modo de recuperarlos) [y/N]?: "
-read -r disk_response
+read -r -e disk_response
 if ! [[ "${disk_response,,}" =~ ^(yes|y)$ ]]; then
     error_print "Cerrando..."
     exit
