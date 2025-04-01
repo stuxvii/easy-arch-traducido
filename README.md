@@ -7,7 +7,7 @@
 - **Snapshots BTRFS**: Tendrás una configuración resistente que automáticamente tomara copias de seguridad de tus volumenes en una base semanal.
 - **Cifrado LUKS2**: Tus datos se almacenaran en una particion cifrada con LUKS2.
 - **ZRAM**: Se configurará el uso de ZRAM, el cual es una alternativa mucho mas optimizada a usar SWAP.
-- **systemd-oomd**: systemd-oomd se hará cargo de situaciones tipo OOM (Out Of Memory, Fuera De Memoria traducido al español), a nivel de usuario, a cambio de a nivel de kernel, haciendo tu sistema menos vulnerable a crasheos repentinos.
+- **systemd-oomd**: systemd-oomd se hará cargo de situaciones tipo OOM (Out Of Memory, Fuera De Memoria traducido al español), a nivel de usuario, en cambio de a nivel de kernel, haciendo tu sistema menos vulnerable a crasheos repentinos.
 - **Adiciones de Invitado VM**: Este script proveerá con integraciones de sistema invitado en el caso de que se detecte el uso de VMWare Workstation, VirtualBox, QEMU-KVM o Hyper-V.
 - **Configuración del usuario**: Puede añadirse un usuario con permisos de administrador usando este script para evitar dificultad.
 - **Revisiones de CI**: ShellChecker revisara cada PR periodicamente para corregir errores de ortografía en bash, practicas de programación ineficientes, etc... 
