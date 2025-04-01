@@ -33,20 +33,20 @@ error_print () {
 virt_check () {
     hypervisor=$(systemd-detect-virt)
     case $hypervisor in
-        kvm )   info_print "KVM has been detected, setting up guest tools."
+        kvm )   info_print "KVM ha sido detectado, configurando adiciónes del invitado."
                 pacstrap /mnt qemu-guest-agent &>/dev/null
                 systemctl enable qemu-guest-agent --root=/mnt &>/dev/null
                 ;;
-        vmware  )   info_print "VMWare Workstation/ESXi has been detected, setting up guest tools."
+        vmware  )   info_print "VMWare Workstation/ESXi ha sido detectado, configurando adiciónes del invitado."
                     pacstrap /mnt open-vm-tools >/dev/null
                     systemctl enable vmtoolsd --root=/mnt &>/dev/null
                     systemctl enable vmware-vmblock-fuse --root=/mnt &>/dev/null
                     ;;
-        oracle )    info_print "VirtualBox has been detected, setting up guest tools."
+        oracle )    info_print "VirtualBox ha sido detectado, configurando adiciónes del invitado."
                     pacstrap /mnt virtualbox-guest-utils &>/dev/null
                     systemctl enable vboxservice --root=/mnt &>/dev/null
                     ;;
-        microsoft ) info_print "Hyper-V has been detected, setting up guest tools."
+        microsoft ) info_print "Hyper-V ha sido detectado, configurando adiciónes del invitado."
                     pacstrap /mnt hyperv &>/dev/null
                     systemctl enable hv_fcopy_daemon --root=/mnt &>/dev/null
                     systemctl enable hv_kvp_daemon --root=/mnt &>/dev/null
@@ -57,12 +57,12 @@ virt_check () {
 
 # Selecting a kernel to install (function).
 kernel_selector () {
-    info_print "List of kernels:"
-    info_print "1) Stable: Vanilla Linux kernel with a few specific Arch Linux patches applied"
-    info_print "2) Hardened: A security-focused Linux kernel"
-    info_print "3) Longterm: Long-term support (LTS) Linux kernel"
-    info_print "4) Zen Kernel: A Linux kernel optimized for desktop usage"
-    input_print "Please select the number of the corresponding kernel (e.g. 1): " 
+    info_print "Lista de kernels:"
+    info_print "1) Estable: Kernel Linux vanilla con unos parches especificos de Arch Linux aplicados"
+    info_print "2) Hardened: Un kernel de Linux enfocado en la seguridad"
+    info_print "3) Largo-Plazo: Kernel de Linux con soporte a largo plazo (Long-Term Support LTS)"
+    info_print "4) Kernel Zen: Un kernel de Linux optimizado para el uso habitual"
+    input_print "Por favor, elija un kernel (e.g. 1): " 
     read -r kernel_choice
     case $kernel_choice in
         1 ) kernel="linux"
@@ -73,23 +73,23 @@ kernel_selector () {
             return 0;;
         4 ) kernel="linux-zen"
             return 0;;
-        * ) error_print "You did not enter a valid selection, please try again."
+        * ) error_print "Elije una opcion valida, intenta otra vez."
             return 1
     esac
 }
 
 # Selecting a way to handle internet connection (function).
 network_selector () {
-    info_print "Network utilities:"
-    info_print "1) IWD: Utility to connect to networks written by Intel (WiFi-only, built-in DHCP client)"
-    info_print "2) NetworkManager: Universal network utility (both WiFi and Ethernet, highly recommended)"
-    info_print "3) wpa_supplicant: Utility with support for WEP and WPA/WPA2 (WiFi-only, DHCPCD will be automatically installed)"
-    info_print "4) dhcpcd: Basic DHCP client (Ethernet connections or VMs)"
-    info_print "5) I will do this on my own (only advanced users)"
-    input_print "Please select the number of the corresponding networking utility (e.g. 1): "
+    info_print "Utilidades de conexión:"
+    info_print "1) IWD: Utilidad para conectarse a redes inalámbricas, escrito por Intel (Solo WiFi, con un cliente DHCP integrado)"
+    info_print "2) NetworkManager: Utilidad de conexión universal (WiFi y Ethernet, recomendado)"
+    info_print "3) wpa_supplicant: Utilidad con soporte para WEP y WPA/WPA2 (Solo WiFi, DHCPCD sera instalado automaticamente)"
+    info_print "4) dhcpcd: Cliente DHCP basico (Conecciones por Ethernet o Maquinas virtuales)"
+    info_print "5) Configurare esto por mi cuenta (Usuarios avanzados)"
+    input_print "Por favor seleccione una opcion para su conexión. (e.g. 1): "
     read -r network_choice
     if ! ((1 <= network_choice <= 5)); then
-        error_print "You did not enter a valid selection, please try again."
+        error_print "Elije una opcion valida, intenta otra vez."
         return 1
     fi
     return 0
@@ -98,20 +98,20 @@ network_selector () {
 # Installing the chosen networking method to the system (function).
 network_installer () {
     case $network_choice in
-        1 ) info_print "Installing and enabling IWD."
+        1 ) info_print "Instalando y habilitando IWD."
             pacstrap /mnt iwd >/dev/null
             systemctl enable iwd --root=/mnt &>/dev/null
             ;;
-        2 ) info_print "Installing and enabling NetworkManager."
+        2 ) info_print "Instalando y habilitando NetworkManager."
             pacstrap /mnt networkmanager >/dev/null
             systemctl enable NetworkManager --root=/mnt &>/dev/null
             ;;
-        3 ) info_print "Installing and enabling wpa_supplicant and dhcpcd."
+        3 ) info_print "Instalando y habilitando wpa_supplicant y dhcpcd."
             pacstrap /mnt wpa_supplicant dhcpcd >/dev/null
             systemctl enable wpa_supplicant --root=/mnt &>/dev/null
             systemctl enable dhcpcd --root=/mnt &>/dev/null
             ;;
-        4 ) info_print "Installing dhcpcd."
+        4 ) info_print "Instalando dhcpcd."
             pacstrap /mnt dhcpcd >/dev/null
             systemctl enable dhcpcd --root=/mnt &>/dev/null
     esac
@@ -119,19 +119,19 @@ network_installer () {
 
 # User enters a password for the LUKS Container (function).
 lukspass_selector () {
-    input_print "Please enter a password for the LUKS container (you're not going to see the password): "
+    input_print "Por favor inserte una contraseña para encriptar tu disco con LUKS (Tu clave no se mostrara directamente para protejer tu privacidad.): "
     read -r -s password
     if [[ -z "$password" ]]; then
         echo
-        error_print "You need to enter a password for the LUKS Container, please try again."
+        error_print "Necesitas crear una contraseña para LUKS. Intenta de nuevo."
         return 1
     fi
     echo
-    input_print "Please enter the password for the LUKS container again (you're not going to see the password): "
+    input_print "Confirmar tu contraseña de nuevo (Tu clave no se mostrara directamente para protejer tu privacidad.): "
     read -r -s password2
     echo
     if [[ "$password" != "$password2" ]]; then
-        error_print "Passwords don't match, please try again."
+        error_print "Las contraseñas no coinciden. Intenta otra vez."
         return 1
     fi
     return 0
@@ -139,25 +139,25 @@ lukspass_selector () {
 
 # Setting up a password for the user account (function).
 userpass_selector () {
-    input_print "Please enter name for a user account (enter empty to not create one): "
+    input_print "Crea un nombre de usuario (Deja este campo vacio para no crear ningun usuario, no recomendado para usuarios no avanzados): "
     read -r username
     if [[ -z "$username" ]]; then
         return 0
     fi
-    input_print "Please enter a password for $username (you're not going to see the password): "
+    input_print "Crea una contraseña para el usuario $username (Tu clave no se mostrara directamente para protejer tu privacidad.): "
     read -r -s userpass
     if [[ -z "$userpass" ]]; then
         echo
-        error_print "You need to enter a password for $username, please try again."
+        error_print "Necesitas insertar una contraseña para $username, please try again."
         return 1
     fi
     echo
-    input_print "Please enter the password again (you're not going to see it): " 
+    input_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
     read -r -s userpass2
     echo
     if [[ "$userpass" != "$userpass2" ]]; then
         echo
-        error_print "Passwords don't match, please try again."
+        error_print "Las claves no coinciden, intenta de nuevo."
         return 1
     fi
     return 0
@@ -165,19 +165,19 @@ userpass_selector () {
 
 # Setting up a password for the root account (function).
 rootpass_selector () {
-    input_print "Please enter a password for the root user (you're not going to see it): "
+    input_print "Por favor crear una contraseña para el usuario root (Tu clave no se mostrara directamente para protejer tu privacidad.): "
     read -r -s rootpass
     if [[ -z "$rootpass" ]]; then
         echo
-        error_print "You need to enter a password for the root user, please try again."
+        error_print "Necesitas crear una contraseña para el usuario root."
         return 1
     fi
     echo
-    input_print "Please enter the password again (you're not going to see it): " 
+    input_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
     read -r -s rootpass2
     echo
     if [[ "$rootpass" != "$rootpass2" ]]; then
-        error_print "Passwords don't match, please try again."
+        error_print "Las claves no coinciden, intenta de nuevo."
         return 1
     fi
     return 0
@@ -187,20 +187,20 @@ rootpass_selector () {
 microcode_detector () {
     CPU=$(grep vendor_id /proc/cpuinfo)
     if [[ "$CPU" == *"AuthenticAMD"* ]]; then
-        info_print "An AMD CPU has been detected, the AMD microcode will be installed."
+        info_print "Un CPU de AMD ha sido detectado, los parches microcode para AMD seran instalados."
         microcode="amd-ucode"
     else
-        info_print "An Intel CPU has been detected, the Intel microcode will be installed."
+        info_print "Un CPU de Intel ha sido detectado, los parches microcode para Intel seran instalados."
         microcode="intel-ucode"
     fi
 }
 
 # User enters a hostname (function).
 hostname_selector () {
-    input_print "Please enter the hostname: "
+    input_print "Por favor, crea un nombre para tu maquina: "
     read -r hostname
     if [[ -z "$hostname" ]]; then
-        error_print "You need to enter a hostname in order to continue."
+        error_print "Necesitas crear un nombre para tu maquina."
         return 1
     fi
     return 0
@@ -208,17 +208,17 @@ hostname_selector () {
 
 # User chooses the locale (function).
 locale_selector () {
-    input_print "Please insert the locale you use (format: xx_XX. Enter empty to use en_US, or \"/\" to search locales): " locale
+    input_print "Por favor elije un lenguaje (formato: xx_XX. Deja esto vacio para seleccionar en_US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): " locale
     read -r locale
     case "$locale" in
         '') locale="en_US.UTF-8"
-            info_print "$locale will be the default locale."
+            info_print "$locale será el lenguaje predeterminado."
             return 0;;
         '/') sed -E '/^# +|^#$/d;s/^#| *$//g;s/ .*/ (Charset:&)/' /etc/locale.gen | less -M
                 clear
                 return 1;;
         *)  if ! grep -q "^#\?$(sed 's/[].*[]/\\&/g' <<< "$locale") " /etc/locale.gen; then
-                error_print "The specified locale doesn't exist or isn't supported."
+                error_print "El lenguaje que elegiste no existe o no es soportado. Elije otro, porfavor"
                 return 1
             fi
             return 0
@@ -227,20 +227,20 @@ locale_selector () {
 
 # User chooses the console keyboard layout (function).
 keyboard_selector () {
-    input_print "Please insert the keyboard layout to use in console (enter empty to use US, or \"/\" to look up for keyboard layouts): "
+    input_print "Por favor elije un lenguaje para tu teclado (Deja esto vacio para seleccionar US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): "
     read -r kblayout
     case "$kblayout" in
         '') kblayout="us"
-            info_print "The standard US keyboard layout will be used."
+            info_print "Configurando teclado en idioma Ingles."
             return 0;;
         '/') localectl list-keymaps
              clear
              return 1;;
         *) if ! localectl list-keymaps | grep -Fxq "$kblayout"; then
-               error_print "The specified keymap doesn't exist."
+               error_print "El mapa de teclado especificado no existe. Intente otro."
                return 1
            fi
-        info_print "Changing console layout to $kblayout."
+        info_print "Configurando el teclado para estar en idioma $kblayout."
         loadkeys "$kblayout"
         return 0
     esac
@@ -251,24 +251,24 @@ echo -ne "${BOLD}${BYELLOW}
 ======================================================================
 ███████╗ █████╗ ███████╗██╗   ██╗      █████╗ ██████╗  ██████╗██╗  ██╗
 ██╔════╝██╔══██╗██╔════╝╚██╗ ██╔╝     ██╔══██╗██╔══██╗██╔════╝██║  ██║
-█████╗  ███████║███████╗ ╚████╔╝█████╗███████║██████╔╝██║     ███████║
-██╔══╝  ██╔══██║╚════██║  ╚██╔╝ ╚════╝██╔══██║██╔══██╗██║     ██╔══██║
+█████╗  ███████║███████╗ ╚████╔╝█████╗███████║██████╔╝██║     ███████║ traducido por acidbox :p
+██╔══╝  ██╔══██║╚════██║  ╚██╔╝ ╚════╝██╔══██║██╔══██╗██║     ██╔══██║ Proyecto original: https://github.com/classy-giraffe/easy-arch 
 ███████╗██║  ██║███████║   ██║        ██║  ██║██║  ██║╚██████╗██║  ██║
 ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝        ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
 ======================================================================
 ${RESET}"
-info_print "Welcome to easy-arch, a script made in order to simplify the process of installing Arch Linux."
+info_print "Bienvenido a easy-arch, un script hecho para simplificar la instalacion de Arch Linux en equipos con soporte UEFI (2013+)."
 
 # Setting up keyboard layout.
 until keyboard_selector; do : ; done
 
 # Choosing the target for the installation.
-info_print "Available disks for the installation:"
-PS3="Please select the number of the corresponding disk (e.g. 1): "
+info_print "Discos disponibles para la instalación:"
+PS3="Por favor seleccione una opción (SE SOBRE ESCRIBIRAN TODOS LOS CONTENIDOS DEL DISCO, Y SE PERDERA CUALQUIER DATO EN EL, ASEGURESE DE RESPALDAR TODO LO IMPORTANTE QUE TENGA!!) (e.g. 1): "
 select ENTRY in $(lsblk -dpnoNAME|grep -P "/dev/sd|nvme|vd");
 do
     DISK="$ENTRY"
-    info_print "Arch Linux will be installed on the following disk: $DISK"
+    info_print "Arch Linux sera instalado en el disco: $DISK"
     break
 done
 
@@ -292,18 +292,18 @@ until userpass_selector; do : ; done
 until rootpass_selector; do : ; done
 
 # Warn user about deletion of old partition scheme.
-input_print "This will delete the current partition table on $DISK once installation starts. Do you agree [y/N]?: "
+input_print "Esto eliminara la tabla de particiones en $DISK cuando la instalación comience. Estas seguro de quieres hacer eso? (Y=SI, N=NO) (Ultima advertencia, elegir "y" borrara todos los datos en el disco, sin modo de recuperarlos) [y/N]?: "
 read -r disk_response
 if ! [[ "${disk_response,,}" =~ ^(yes|y)$ ]]; then
-    error_print "Quitting."
+    error_print "Cerrando..."
     exit
 fi
-info_print "Wiping $DISK."
+info_print "Formateando $DISK."
 wipefs -af "$DISK" &>/dev/null
 sgdisk -Zo "$DISK" &>/dev/null
 
 # Creating a new partition scheme.
-info_print "Creating the partitions on $DISK."
+info_print "Creando particiones en $DISK."
 parted -s "$DISK" \
     mklabel gpt \
     mkpart ESP fat32 1MiB 1025MiB \
@@ -314,26 +314,26 @@ ESP="/dev/disk/by-partlabel/ESP"
 CRYPTROOT="/dev/disk/by-partlabel/CRYPTROOT"
 
 # Informing the Kernel of the changes.
-info_print "Informing the Kernel about the disk changes."
+info_print "Informando al kernel de los cambios."
 partprobe "$DISK"
 
 # Formatting the ESP as FAT32.
-info_print "Formatting the EFI Partition as FAT32."
+info_print "Formateando la partición EFI como FAT32."
 mkfs.fat -F 32 "$ESP" &>/dev/null
 
 # Creating a LUKS Container for the root partition.
-info_print "Creating LUKS Container for the root partition."
+info_print "Creando contenedor LUKS para la partición root."
 echo -n "$password" | cryptsetup luksFormat "$CRYPTROOT" -d - &>/dev/null
 echo -n "$password" | cryptsetup open "$CRYPTROOT" cryptroot -d - 
 BTRFS="/dev/mapper/cryptroot"
 
 # Formatting the LUKS Container as BTRFS.
-info_print "Formatting the LUKS container as BTRFS."
+info_print "Formateando el contenenedor LUKS con tipo BTRFS."
 mkfs.btrfs "$BTRFS" &>/dev/null
 mount "$BTRFS" /mnt
 
 # Creating BTRFS subvolumes.
-info_print "Creating BTRFS subvolumes."
+info_print "Creando subvolumenes BTRFS."
 subvols=(snapshots var_pkgs var_log home root srv)
 for subvol in '' "${subvols[@]}"; do
     btrfs su cr /mnt/@"$subvol" &>/dev/null
@@ -341,7 +341,7 @@ done
 
 # Mounting the newly created subvolumes.
 umount /mnt
-info_print "Mounting the newly created subvolumes."
+info_print "Montando subvolumenes recientementes creados."
 mountopts="ssd,noatime,compress-force=zstd:3,discard=async"
 mount -o "$mountopts",subvol=@ "$BTRFS" /mnt
 mkdir -p /mnt/{home,root,srv,.snapshots,var/{log,cache/pacman/pkg},boot}
@@ -358,14 +358,14 @@ mount "$ESP" /mnt/boot/
 microcode_detector
 
 # Pacstrap (setting up a base sytem onto the new root).
-info_print "Installing the base system (it may take a while)."
-pacstrap -K /mnt base "$kernel" "$microcode" linux-firmware "$kernel"-headers btrfs-progs grub grub-btrfs rsync efibootmgr snapper reflector snap-pac zram-generator sudo &>/dev/null
+info_print "Instalando el sistema base (Tomara un largo rato, ve a preparate una taza de té.)."
+pacstrap -K /mnt base "$kernel" "$microcode" linux-firmware "$kernel"-headers btrfs-progs grub grub-btrfs rsync efibootmgr lightdm lightdm-slick-greeter plasma-desktop snapper reflector snap-pac zram-generator sudo &>/dev/null
 
 # Setting up the hostname.
 echo "$hostname" > /mnt/etc/hostname
 
 # Generating /etc/fstab.
-info_print "Generating a new fstab."
+info_print "Generando el fstab."
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Configure selected locale and console keymap
@@ -374,7 +374,7 @@ echo "LANG=$locale" > /mnt/etc/locale.conf
 echo "KEYMAP=$kblayout" > /mnt/etc/vconsole.conf
 
 # Setting hosts file.
-info_print "Setting hosts file."
+info_print "Modificando nombre de equipo."
 cat > /mnt/etc/hosts <<EOF
 127.0.0.1   localhost
 ::1         localhost
@@ -388,18 +388,18 @@ virt_check
 network_installer
 
 # Configuring /etc/mkinitcpio.conf.
-info_print "Configuring /etc/mkinitcpio.conf."
+info_print "Configurando /etc/mkinitcpio.conf."
 cat > /mnt/etc/mkinitcpio.conf <<EOF
 HOOKS=(systemd autodetect keyboard sd-vconsole modconf block sd-encrypt filesystems)
 EOF
 
 # Setting up LUKS2 encryption in grub.
-info_print "Setting up grub config."
+info_print "Configurando la configuración en grub."
 UUID=$(blkid -s UUID -o value $CRYPTROOT)
 sed -i "\,^GRUB_CMDLINE_LINUX=\"\",s,\",&rd.luks.name=$UUID=cryptroot root=$BTRFS," /mnt/etc/default/grub
 
 # Configuring the system.
-info_print "Configuring the system (timezone, system clock, initramfs, Snapper, GRUB)."
+info_print "Configurando el sistema (timezone, system clock, initramfs, Snapper, GRUB)."
 arch-chroot /mnt /bin/bash -e <<EOF
 
     # Setting up timezone.
@@ -432,20 +432,20 @@ arch-chroot /mnt /bin/bash -e <<EOF
 EOF
 
 # Setting root password.
-info_print "Setting root password."
+info_print "Configurando contraseña root."
 echo "root:$rootpass" | arch-chroot /mnt chpasswd
 
 # Setting user password.
 if [[ -n "$username" ]]; then
     echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/wheel
-    info_print "Adding the user $username to the system with root privilege."
+    info_print "Añadiendo el usuario $username al sistema con permisos de administrador."
     arch-chroot /mnt useradd -m -G wheel -s /bin/bash "$username"
-    info_print "Setting user password for $username."
+    info_print "Configurando contraseña para $username."
     echo "$username:$userpass" | arch-chroot /mnt chpasswd
 fi
 
 # Boot backup hook.
-info_print "Configuring /boot backup when pacman transactions are made."
+info_print "Configurando respaldo en /boot para cuando las transacciones de pacman se realizan."
 mkdir /mnt/etc/pacman.d/hooks
 cat > /mnt/etc/pacman.d/hooks/50-bootbackup.hook <<EOF
 [Trigger]
@@ -463,23 +463,24 @@ Exec = /usr/bin/rsync -a --delete /boot /.bootbackup
 EOF
 
 # ZRAM configuration.
-info_print "Configuring ZRAM."
+info_print "Configurando ZRAM."
 cat > /mnt/etc/systemd/zram-generator.conf <<EOF
 [zram0]
 zram-size = min(ram, 8192)
 EOF
 
 # Pacman eye-candy features.
-info_print "Enabling colours, animations, and parallel downloads for pacman."
+info_print "Habilitando colores, animaciones, y descargas paralelas para pacman."
 sed -Ei 's/^#(Color)$/\1\nILoveCandy/;s/^#(ParallelDownloads).*/\1 = 10/' /mnt/etc/pacman.conf
 
 # Enabling various services.
-info_print "Enabling Reflector, automatic snapshots, BTRFS scrubbing and systemd-oomd."
+info_print "Habilitando Reflector, snapshots del sistema automaticos, scrubbing BTRFS y systemd-oomd."
 services=(reflector.timer snapper-timeline.timer snapper-cleanup.timer btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var-log.timer btrfs-scrub@\\x2esnapshots.timer grub-btrfsd.service systemd-oomd)
 for service in "${services[@]}"; do
     systemctl enable "$service" --root=/mnt &>/dev/null
 done
 
-# Finishing up.
-info_print "Done, you may now wish to reboot (further changes can be done by chrooting into /mnt)."
+# Finishing up. 
+info_print "Terminado sin errores! Puedes proceder a tu nuevo sistema Arch Linux desconectando tu medio de instalación y reiniciando. (Puedes realizar mas cambios en este entorno si lo deseas, no hay apuro.)"
+
 exit
