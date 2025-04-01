@@ -62,7 +62,8 @@ kernel_selector () {
     info_print "2) Hardened: Un kernel de Linux enfocado en la seguridad"
     info_print "3) Largo-Plazo: Kernel de Linux con soporte a largo plazo (Long-Term Support LTS)"
     info_print "4) Kernel Zen: Un kernel de Linux optimizado para el uso habitual"
-    input_print "Por favor, elija un kernel (e.g. 1): " 
+    info_print "Por favor, elija un kernel (e.g. 1): " 
+    input_print ""
     read -r -e kernel_choice
     case $kernel_choice in
         1 ) kernel="linux"
@@ -86,7 +87,8 @@ network_selector () {
     info_print "3) wpa_supplicant: Utilidad con soporte para WEP y WPA/WPA2 (Solo WiFi, DHCPCD sera instalado automaticamente)"
     info_print "4) dhcpcd: Cliente DHCP basico (Conecciones por Ethernet o Maquinas virtuales)"
     info_print "5) Configurare esto por mi cuenta (Usuarios avanzados)"
-    input_print "Por favor seleccione una opcion para su conexión. (e.g. 1): "
+    info_print "Por favor seleccione una opcion para su conexión. (e.g. 1): "
+    input_print ""
     read -r -e network_choice
     if ! ((1 <= network_choice <= 5)); then
         error_print "Elije una opcion valida, intenta otra vez."
@@ -119,7 +121,8 @@ network_installer () {
 
 # User enters a password for the LUKS Container (function).
 lukspass_selector () {
-    input_print "Por favor inserte una contraseña para encriptar tu disco con LUKS (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    info_print "Por favor inserte una contraseña para encriptar tu disco con LUKS (Tu clave estara oculta para tu privacidad.): "
+    input_print ""
     read -r -e -s password
     if [[ -z "$password" ]]; then
         echo
@@ -127,7 +130,8 @@ lukspass_selector () {
         return 1
     fi
     echo
-    input_print "Confirmar tu contraseña de nuevo (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    info_print "Confirmar tu contraseña de nuevo (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    input_print ""
     read -r -e -s password2
     echo
     if [[ "$password" != "$password2" ]]; then
@@ -139,12 +143,14 @@ lukspass_selector () {
 
 # Setting up a password for the user account (function).
 userpass_selector () {
-    input_print "Crea un nombre de usuario (Deja este campo vacio para no crear ningun usuario, no recomendado para usuarios no avanzados): "
+    info_print "Crea un nombre de usuario (Deja este campo vacio para no crear ningun usuario): "
+    input_print ""
     read -r -e username
     if [[ -z "$username" ]]; then
         return 0
     fi
-    input_print "Crea una contraseña para el usuario $username (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    info_print "Crea una contraseña para el usuario $username (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    input_print ""
     read -r -e -s userpass
     if [[ -z "$userpass" ]]; then
         echo
@@ -152,7 +158,8 @@ userpass_selector () {
         return 1
     fi
     echo
-    input_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
+    info_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
+    input_print ""
     read -r -e -s userpass2
     echo
     if [[ "$userpass" != "$userpass2" ]]; then
@@ -165,7 +172,8 @@ userpass_selector () {
 
 # Setting up a password for the root account (function).
 rootpass_selector () {
-    input_print "Por favor crear una contraseña para el usuario root (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    info_print "Por favor crear una contraseña para el usuario root (Tu clave no se mostrara directamente para protejer tu privacidad.): "
+    input_print ""
     read -r -e -s rootpass
     if [[ -z "$rootpass" ]]; then
         echo
@@ -173,7 +181,8 @@ rootpass_selector () {
         return 1
     fi
     echo
-    input_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
+    info_print "Por favor inserta la contraseña otra vez. (Tu clave no se mostrara directamente para protejer tu privacidad.): " 
+    input_print ""
     read -r -e -s rootpass2
     echo
     if [[ "$rootpass" != "$rootpass2" ]]; then
@@ -197,7 +206,8 @@ microcode_detector () {
 
 # User enters a hostname (function).
 hostname_selector () {
-    input_print "Por favor, crea un nombre para tu maquina: "
+    info_print "Por favor, crea un nombre para tu maquina: "
+    input_print ""
     read -r -e hostname
     if [[ -z "$hostname" ]]; then
         error_print "Necesitas crear un nombre para tu maquina."
@@ -208,7 +218,8 @@ hostname_selector () {
 
 # User chooses the locale (function).
 locale_selector () {
-    input_print "Por favor elije un lenguaje (formato: xx_XX. Deja esto vacio para seleccionar en_US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): " locale
+    info_print "Por favor elije un lenguaje (formato: xx_XX. Deja esto vacio para seleccionar en_US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): " locale
+    input_print ""
     read -r -e locale
     case "$locale" in
         '') locale="en_US.UTF-8"
@@ -227,7 +238,8 @@ locale_selector () {
 
 # User chooses the console keyboard layout (function).
 keyboard_selector () {
-    input_print "Por favor elije un lenguaje para tu teclado (Deja esto vacio para seleccionar US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): "
+    info_print "Por favor elije un lenguaje para tu teclado (Deja esto vacio para seleccionar US (Inglés de Estados Unidos), o introduce \"/\" para buscar lenguajes): "
+    input_print ""
     read -r -e kblayout
     case "$kblayout" in
         '') kblayout="us"
@@ -292,7 +304,8 @@ until userpass_selector; do : ; done
 until rootpass_selector; do : ; done
 
 # Warn user about deletion of old partition scheme.
-input_print "Esto eliminara la tabla de particiones en $DISK cuando la instalación comience. Estas seguro de quieres hacer eso? (Y=SI, N=NO) (Ultima advertencia, elegir "y" borrara todos los datos en el disco, sin modo de recuperarlos) [y/N]?: "
+info_print "Se esta por eliminar la tabla de particiones en $DISK. Quieres continuar? (Y=SI, N=NO) (Ultima advertencia, elegir 'Y' borrara TODOS los datos en el disco) [y/N]?: "
+input_print ""
 read -r -e disk_response
 if ! [[ "${disk_response,,}" =~ ^(yes|y)$ ]]; then
     error_print "Cerrando..."
