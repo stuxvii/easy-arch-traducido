@@ -1,50 +1,50 @@
 ![](https://img.shields.io/github/license/classy-giraffe/easy-arch?label=License)
-![](https://img.shields.io/github/stars/classy-giraffe/easy-arch?label=Stars)
-![](https://img.shields.io/github/forks/classy-giraffe/easy-arch?label=Forks)
+![](https://img.shields.io/github/stars/stuxvii/easy-arch-traducido?label=Stars)
+![](https://img.shields.io/github/forks/stuxvii/easy-arch-traducido?label=Forks)
 
-[easy-arch](https://github.com/classy-giraffe/easy-arch) is a **bash script** that boostraps [Arch Linux](https://archlinux.org/) with sane opinionated defaults.
+[easy-arch](https://github.com/stuxvii/easy-arch-traducido) es un **script escrito en bash** que arranca [Arch Linux](https://archlinux.org/) con ajustes determinados para ser de utilidad.
 
-- **BTRFS snapshots**: you will have a resilient setup that automatically takes snapshots of your volumes based on a weekly schedule
-- **LUKS2 encryption**: your data will live on a LUKS2 partition protected by a password
-- **ZRAM**: the setup use ZRAM which aims to replace traditional swap partition/files by making the system snappier
-- **systemd-oomd**: systemd-oomd will take care of OOM situations at userspace level rather than at kernel level, making the system less prone to kernel crashes 
-- **VM additions**: the script automatically provides guest tools if it detects that a virtualized environment such as VMWare Workstation, VirtualBox, QEMU-KVM is being used
-- **User account setup**: a default user account with sudo permissions can be configured in order to avoid hassle in the post installation phase
-- **CI checks**: ShellChecker checks every PR periodically for bash syntax errors, bad coding practices, etc... 
+- **Snapshots BTRFS**: Tendrás una configuración resistente que automáticamente tomara copias de seguridad de tus volumenes en una base semanal.
+- **Cifrado LUKS2**: Tus datos se almacenaran en una particion cifrada con LUKS2
+- **ZRAM**: Se configurará el uso de ZRAM el cual es una alternativa mucho mas optimizada a usar SWAP
+- **systemd-oomd**: systemd-oomd se hará cargo de situaciones tipo OOM (Out Of Memory, Fuera De Memoria traducido al español), a nivel de usuario a cambio de a nivel de kernel, haciendo tu sistema menos vulnerable a crasheos repentinos
+- **Adiciones de Invitado VM**: Este script proveerá con herramientas de invitado en el caso de que se detecte el uso de VMWare Workstation, VirtualBox, QEMU-KVM o Hyper-V.
+- **Configuración del usuario**: Un usuario con permisos de administrador se puede configurar con este script para evitar dificultad
+- **Revisiones de CI**: ShellChecker revisara cada PR periodicamente para corregir errores de ortografía en bash, practicas de programación ineficientes, etc... 
 
-## One-step Automated Install (shorter)
+## Descargar el original en ingles
 
 ### `bash <(curl -sL bit.ly/easy-arch)`
 
-## Alternative Methods (manual)
+## Descargar la versión traducida
 
 ```bash 
-wget -O easy-arch.sh https://raw.githubusercontent.com/classy-giraffe/easy-arch/main/easy-arch.sh
+wget -O easy-arch.sh https://raw.githubusercontent.com/stuxvii/easy-arch-traducido/main/easy-arch.sh
 chmod +x easy-arch.sh
 bash easy-arch.sh
 ```
 
-## Partitions layout 
+## Esquema de particiones
 
-The **partitions layout** is simple and it consists solely of two partitions:
-1. A **FAT32** partition (1GiB), mounted at `/boot/` as ESP.
-2. A **LUKS2 encrypted container**, which takes the rest of the disk space, mounted at `/` as root.
+El **esquema de particiones** es simple y solo constituye de dos volumenes:
+1. Una partición **FAT32** de 1GiB, montada en `/boot/` como ESP.
+2. Un **volumen encriptado LUKS2**, el cual ocupa el espacio restante, montado en `/` como root.
 
-| Partition Number | Label     | Size              | Mountpoint     | Filesystem              |
-|------------------|-----------|-------------------|----------------|-------------------------|
-| 1                | ESP       | 1 GiB              | /boot/         | FAT32                   |
-| 2                | Cryptroot | Rest of the disk  | /              | BTRFS Encrypted (LUKS2) |
+| Numero de Particion | Nombre    | Tamaño            | Ubicación      | Formato                  |
+|---------------------|-----------|-------------------|----------------|--------------------------|
+| 1                   | ESP       | 1 GiB             | /boot/         | FAT32                    |
+| 2                   | Cryptroot | Resto del disco   | /              | BTRFS encriptado (LUKS2) |
 
-## BTRFS subvolumes layout
+## Esquema de subvolúmenes BTRFS
 
-The **BTRFS subvolumes layout** follows the traditional and suggested layout used by **Snapper**, you can find it [here](https://wiki.archlinux.org/index.php/Snapper#Suggested_filesystem_layout).
+El **Esquema de subvolúmenes BTRFS** obedece el esquema tradicional sugerido queusa **Snapper**, lo puedes encontrar [aquí](https://wiki.archlinux.org/index.php/Snapper#Suggested_filesystem_layout).
 
-| Subvolume Number | Subvolume Name | Mountpoint                    |
-|------------------|----------------|-------------------------------|
-| 1                | @              | /                             |
-| 2                | @home          | /home                         |
-| 3                | @root          | /root                         |
-| 4                | @srv           | /srv                          |
-| 5                | @snapshots     | /.snapshots                   |
-| 6                | @var_log       | /var/log                      |
-| 7                | @var_pkgs      | /var/cache/pacman/pkg         |
+| Número del Subvolúmen | Nombre del subvolúmen | Ubicación                     |
+|-----------------------|-----------------------|-------------------------------|
+| 1                     | @                     | /                             |
+| 2                     | @home                 | /home                         |
+| 3                     | @root                 | /root                         |
+| 4                     | @srv                  | /srv                          |
+| 5                     | @snapshots            | /.snapshots                   |
+| 6                     | @var_log              | /var/log                      |
+| 7                     | @var_pkgs             | /var/cache/pacman/pkg         |
