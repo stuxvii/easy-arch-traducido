@@ -371,8 +371,8 @@ mount "$ESP" /mnt/boot/
 microcode_detector
 
 # Pacstrap (setting up a base sytem onto the new root).
-info_print "Instalando el sistema base (Tomara un largo rato, ve a preparate una taza de té.)."
-pacstrap -K /mnt base "$kernel" "$microcode" linux-firmware "$kernel"-headers btrfs-progs grub grub-btrfs rsync efibootmgr lightdm lightdm-slick-greeter plasma-desktop snapper reflector snap-pac zram-generator sudo &>/dev/null
+info_print "Instalando el sistema base (Tomara un largo rato dependiendo de tu velocidad de internet y velocidad de tu computador, se paciente plis)."
+pacstrap -K /mnt base "$kernel" "$microcode" linux-firmware "$kernel"-headers btrfs-progs grub grub-btrfs lightdm-gtk-greeter rsync efibootmgr lightdm lightdm-slick-greeter plasma-desktop snapper reflector snap-pac zram-generator sudo &>/dev/null
 
 # Setting up the hostname.
 echo "$hostname" > /mnt/etc/hostname
@@ -427,6 +427,9 @@ arch-chroot /mnt /bin/bash -e <<EOF
     # Generating a new initramfs.
     mkinitcpio -P &>/dev/null
 
+    # Hablitando lightdm porque por alguna estupida razon no esta habilitado por defecto
+    systemctl enable lightdm
+    
     # Snapper configuration.
     umount /.snapshots
     rm -r /.snapshots
